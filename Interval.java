@@ -1,12 +1,10 @@
-package IntervalOverlapping;
-
 import java.util.BitSet;
 import java.util.Hashtable;
 import java.util.Random;
 
 import static java.lang.Math.*;
 
-public class Interval implements Comparable {
+public class Interval implements Comparable,Cloneable {
     private int leftBound;
     private int rightBound;
 
@@ -21,7 +19,7 @@ public class Interval implements Comparable {
     }
 
     public boolean isOverLapping(Interval interval) {
-        return isBetween(this.leftBound, interval.leftBound, interval.rightBound) ||
+        return  isBetween(this.leftBound, interval.leftBound, interval.rightBound) ||
                 isBetween(this.rightBound, interval.leftBound, interval.rightBound) ||
                 isBetween(interval.leftBound, this.leftBound, this.rightBound);
     }
@@ -36,9 +34,12 @@ public class Interval implements Comparable {
         }
     }
 
-    public Interval merge(Interval[] arrInterval) {
-        
-        return null;
+    public int clamp(int i){
+        if (i <= leftBound)
+            return leftBound;
+        if (i >= rightBound)
+            return rightBound;
+        return i;
     }
 
     private boolean isBetween(int i, int var1, int var2) {
@@ -73,4 +74,8 @@ public class Interval implements Comparable {
         return (this.leftBound == interval.leftBound) && (this.rightBound == interval.rightBound);
     }
 
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return new Interval(this.leftBound,this.rightBound);
+    }
 }
