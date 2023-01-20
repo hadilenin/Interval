@@ -1,31 +1,29 @@
-import java.util.Random;
-
 import static java.lang.Math.*;
 
 public class Interval<T extends Number> implements Comparable,Cloneable {
     private T startBound;
-    private T rightBound;
+    private T endBound;
 
     public Interval(T var1, T var2) {
         if (getValue(var1) <= getValue(var2)) {
             this.startBound = var1;
-            this.rightBound = var2;
+            this.endBound = var2;
         } else {
             this.startBound = var2;
-            this.rightBound = var1;
+            this.endBound = var1;
         }
     }
 
     public boolean isOverLapping(Interval interval) {
-        return  isBetween(this.startBound, (T) interval.startBound, (T) interval.rightBound) ||
-                isBetween(this.rightBound, (T) interval.startBound, (T) interval.rightBound) ||
-                isBetween((T) interval.startBound, this.startBound, this.rightBound);
+        return  isBetween(this.startBound, (T) interval.startBound, (T) interval.endBound) ||
+                isBetween(this.endBound, (T) interval.startBound, (T) interval.endBound) ||
+                isBetween((T) interval.startBound, this.startBound, this.endBound);
     }
 
     public Interval merge(Interval obj) {
         if (isOverLapping(obj)) {
             Double leftBound = min(getValue(this.startBound), getValue(obj.startBound));
-            Double rightBound = max(getValue(this.rightBound), getValue(obj.rightBound));
+            Double rightBound = max(getValue(this.endBound), getValue(obj.endBound));
             return new Interval(leftBound, rightBound);
         } else {
             throw new IllegalStateException("Intervals aren't overlapping!!");
@@ -35,8 +33,8 @@ public class Interval<T extends Number> implements Comparable,Cloneable {
     public T clamp(T i){
         if (getValue(i) <= getValue(startBound))
             return startBound;
-        if (getValue(i) >= getValue(rightBound))
-            return rightBound;
+        if (getValue(i) >= getValue(endBound))
+            return endBound;
         return i;
     }
 
@@ -51,7 +49,7 @@ public class Interval<T extends Number> implements Comparable,Cloneable {
 
     @Override
     public String toString() {
-        return "[" + getValue(startBound) + "," + getValue(rightBound) + "]";
+        return "[" + getValue(startBound) + "," + getValue(endBound) + "]";
     }
 
     @Override
@@ -74,12 +72,12 @@ public class Interval<T extends Number> implements Comparable,Cloneable {
     @Override
     public boolean equals(Object o) {
         Interval interval = (Interval) o;
-        return (this.startBound == interval.startBound) && (this.rightBound == interval.rightBound);
+        return (this.startBound == interval.startBound) && (this.endBound == interval.endBound);
     }
 
     @Override
     protected Object clone() throws CloneNotSupportedException {
-        return new Interval(this.startBound,this.rightBound);
+        return new Interval(this.startBound,this.endBound);
     }
 
     public T getStartBound() {
@@ -90,11 +88,11 @@ public class Interval<T extends Number> implements Comparable,Cloneable {
         this.startBound = startBound;
     }
 
-    public T getRightBound() {
-        return rightBound;
+    public T getEndBound() {
+        return endBound;
     }
 
-    public void setRightBound(T rightBound) {
-        this.rightBound = rightBound;
+    public void setEndBound(T endBound) {
+        this.endBound = endBound;
     }
 }
