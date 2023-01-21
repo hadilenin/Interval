@@ -1,3 +1,5 @@
+import java.util.ArrayList;
+
 import static java.lang.Math.*;
 
 public class Interval<T extends Number> implements Comparable,Cloneable {
@@ -14,16 +16,26 @@ public class Interval<T extends Number> implements Comparable,Cloneable {
         }
     }
 
-    public boolean isOverLapping(Interval interval) {
-        return  isBetween(this.startBound, (T) interval.startBound, (T) interval.endBound) ||
-                isBetween(this.endBound, (T) interval.startBound, (T) interval.endBound) ||
-                isBetween((T) interval.startBound, this.startBound, this.endBound);
+    public boolean isOverLapping(Interval that) {
+        return  isBetween(this.startBound, (T) that.startBound, (T) that.endBound) ||
+                isBetween(this.endBound, (T) that.startBound, (T) that.endBound) ||
+                isBetween((T) that.startBound, this.startBound, this.endBound);
     }
 
-    public Interval merge(Interval obj) {
-        if (isOverLapping(obj)) {
-            Double leftBound = min(getValue(this.startBound), getValue(obj.startBound));
-            Double rightBound = max(getValue(this.endBound), getValue(obj.endBound));
+    public Interval getIntersection(Interval that){
+        if (this.isOverLapping(that)){
+            Interval intersection = (Interval) this.clone();
+            intersection.setStartBound(max(getValue(this.startBound),getValue(that.startBound)));
+            intersection.setEndBound(min(getValue(this.endBound),getValue(that.endBound)));
+            return intersection;
+        }  else
+                return null;
+    }
+
+    public Interval merge(Interval that) {
+        if (isOverLapping(that)) {
+            Double leftBound = min(getValue(this.startBound), getValue(that.startBound));
+            Double rightBound = max(getValue(this.endBound), getValue(that.endBound));
             return new Interval(leftBound, rightBound);
         } else {
             throw new IllegalStateException("Intervals aren't overlapping!!");
@@ -55,16 +67,13 @@ public class Interval<T extends Number> implements Comparable,Cloneable {
     @Override
     public int compareTo(Object o) {
         if (o != null) {
-            Interval interval = (Interval) o;
-
-            if (equals(interval))
+            Interval that = (Interval) o;
+            if (equals(that))
                 return 0;
-
-            if (getValue(this.startBound) < getValue(interval.startBound))
+            if (getValue(this.startBound) < getValue(that.startBound))
                 return -1;
             else
                 return 1;
-
         } else
             throw new IllegalArgumentException("Null is not comparable!");
     }
@@ -76,7 +85,7 @@ public class Interval<T extends Number> implements Comparable,Cloneable {
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
+    protected Object clone() {
         return new Interval(this.startBound,this.endBound);
     }
 
